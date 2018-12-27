@@ -1,0 +1,143 @@
+<export><workspace name="Temporal"><query name="Insert 2 docs" focus="true" listorder="1" taborder="1" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
+    at "/MarkLogic/temporal.xqy";   
+
+declare option xdmp:mapping "false";
+
+declare variable $INFINITY := "9999-12-31T11:59:59Z";
+
+declare function local:insert-document(
+  $uri as xs:string,
+  $value as xs:long,
+  $start as xs:dateTime
+) as empty-sequence()
+{
+  let $root := 
+    &lt;envelope&gt;
+      &lt;header&gt;
+        &lt;validStart&gt;{$start}&lt;/validStart&gt;
+        &lt;validEnd&gt;{$INFINITY}&lt;/validEnd&gt;
+        &lt;systemStart/&gt;
+        &lt;systemEnd/&gt;
+        &lt;active&gt;true&lt;/active&gt;
+      &lt;/header&gt;
+      &lt;instance&gt;
+        &lt;id&gt;id-1&lt;/id&gt;
+        &lt;value&gt;{$value}&lt;/value&gt;
+      &lt;/instance&gt;
+    &lt;/envelope&gt;
+  return temporal:document-insert("temporal-collection", $uri, $root)
+};
+
+let $timestamps := (
+    xs:dateTime("2018-12-01T12:00:00.00Z"), 
+    xs:dateTime("2018-12-02T12:00:00.00Z"))
+for $ts in $timestamps
+return (
+  xdmp:sleep(5000),
+  xdmp:invoke-function(
+    function () {
+      local:insert-document("/test/doc-1.xml", 1 + xdmp:random(100), $ts)
+    },
+    map:map()
+    =&gt;map:with("update", "true")
+    =&gt;map:with("isolation", "different-transaction")
+  )
+)</query><query name="Delete by deactivate" focus="false" listorder="2" taborder="2" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
+    at "/MarkLogic/temporal.xqy";   
+import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations" at "/memory-operations.xqy";
+
+declare option xdmp:mapping "false";
+
+declare variable $INFINITY := "9999-12-31T11:59:59Z";
+
+declare function local:delete-document(
+  $uri as xs:string,
+  $start as xs:dateTime
+) as empty-sequence()
+{
+  let $root := fn:doc($uri)/node()
+
+  let $new := mem:copy($root) ! 
+	  (
+	    mem:replace-value(.,$root/header/validStart, $start),
+	    mem:replace-value(.,$root/header/active, fn:false()),
+	    mem:execute(.)
+	  )
+  return temporal:document-insert("temporal-collection", $uri, $new)
+};
+
+let $timestamps := (
+    xs:dateTime("2018-12-03T12:00:00.00Z"))
+for $ts in $timestamps
+return (
+  xdmp:invoke-function(
+    function () {
+      local:delete-document("/test/doc-1.xml", $ts)
+    },
+    map:map()
+    =&gt;map:with("update", "true")
+    =&gt;map:with("isolation", "different-transaction")
+  )
+)</query><query name="Revive doc" focus="false" listorder="3" taborder="3" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
+    at "/MarkLogic/temporal.xqy";   
+
+declare option xdmp:mapping "false";
+
+declare variable $INFINITY := "9999-12-31T11:59:59Z";
+
+declare function local:insert-document(
+  $uri as xs:string,
+  $value as xs:long,
+  $start as xs:dateTime
+) as empty-sequence()
+{
+  let $root := 
+    &lt;envelope&gt;
+      &lt;header&gt;
+        &lt;validStart&gt;{$start}&lt;/validStart&gt;
+        &lt;validEnd&gt;{$INFINITY}&lt;/validEnd&gt;
+        &lt;systemStart/&gt;
+        &lt;systemEnd/&gt;
+        &lt;active&gt;true&lt;/active&gt;
+      &lt;/header&gt;
+      &lt;instance&gt;
+        &lt;id&gt;id-1&lt;/id&gt;
+        &lt;value&gt;{$value}&lt;/value&gt;
+      &lt;/instance&gt;
+    &lt;/envelope&gt;
+  return temporal:document-insert("temporal-collection", $uri, $root)
+};
+
+let $timestamps := (
+    xs:dateTime("2018-12-04T12:00:00.00Z"))
+for $ts in $timestamps
+return (
+  xdmp:invoke-function(
+    function () {
+      local:insert-document("/test/doc-1.xml", 1 + xdmp:random(100), $ts)
+    },
+    map:map()
+    =&gt;map:with("update", "true")
+    =&gt;map:with("isolation", "different-transaction")
+  )
+)</query><query name="Temporal Overview" focus="false" listorder="4" taborder="4" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+
+let $result := cts:search(
+  fn:doc(), 
+  cts:collection-query("/test/doc-1.xml"),
+  (
+    "unfiltered", 
+    cts:index-order(cts:element-reference(xs:QName("systemStart")),"ascending"),
+    cts:index-order(cts:element-reference(xs:QName("systemEnd")),"ascending"),
+    cts:index-order(cts:element-reference(xs:QName("validEnd")),"ascending")
+  )
+)
+
+return ($result ! (xdmp:node-uri(.), ("latest" = xdmp:document-get-collections(xdmp:node-uri(.))), .//header))</query><query name="Temporal Delete" focus="false" listorder="5" taborder="5" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
+    at "/MarkLogic/temporal.xqy";   
+
+temporal:document-delete("temporal-collection", "/test/doc-1.xml")</query></workspace></export>
