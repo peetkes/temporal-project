@@ -38,5 +38,23 @@
 			"range-value-positions": false,
 			"scalar-type": "dateTime"
 		}
+	,
+		{
+			"collation": "http://marklogic.com/collation/codepoint",
+			"invalid-values": "reject",
+			"localname": "id",
+			"namespace-uri": "",
+			"range-value-positions": false,
+			"scalar-type": "string"
+		}
+	,
+		{
+			"collation": "",
+			"invalid-values": "reject",
+			"localname": "value",
+			"namespace-uri": "",
+			"range-value-positions": false,
+			"scalar-type": "long"
+		}
 	]
 }

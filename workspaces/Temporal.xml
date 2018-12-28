@@ -1,4 +1,4 @@
-<export><workspace name="Temporal"><query name="Insert 2 docs" focus="true" listorder="1" taborder="1" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+<export><workspace name="Temporal"><query name="Insert 2 docs" focus="false" listorder="1" taborder="1" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
 import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
     at "/MarkLogic/temporal.xqy";   
 
@@ -12,6 +12,8 @@ declare function local:insert-document(
   $start as xs:dateTime
 ) as empty-sequence()
 {
+  let $options := map:map()
+  =&gt;map:with("collections","Test")
   let $root := 
     &lt;envelope&gt;
       &lt;header&gt;
@@ -26,7 +28,7 @@ declare function local:insert-document(
         &lt;value&gt;{$value}&lt;/value&gt;
       &lt;/instance&gt;
     &lt;/envelope&gt;
-  return temporal:document-insert("temporal-collection", $uri, $root)
+  return temporal:document-insert("temporal-collection", $uri, $root, $options)
 };
 
 let $timestamps := (
@@ -43,7 +45,7 @@ return (
     =&gt;map:with("update", "true")
     =&gt;map:with("isolation", "different-transaction")
   )
-)</query><query name="Delete by deactivate" focus="false" listorder="2" taborder="2" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+)</query><query name="Delete by deactivate" focus="false" listorder="2" taborder="2" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
 import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
     at "/MarkLogic/temporal.xqy";   
 import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations" at "/memory-operations.xqy";
@@ -58,6 +60,8 @@ declare function local:delete-document(
 ) as empty-sequence()
 {
   let $root := fn:doc($uri)/node()
+  let $options := map:map()
+  =&gt;map:with("collections","Test")
 
   let $new := mem:copy($root) ! 
 	  (
@@ -65,7 +69,7 @@ declare function local:delete-document(
 	    mem:replace-value(.,$root/header/active, fn:false()),
 	    mem:execute(.)
 	  )
-  return temporal:document-insert("temporal-collection", $uri, $new)
+  return temporal:document-insert("temporal-collection", $uri, $new, $options)
 };
 
 let $timestamps := (
@@ -80,7 +84,7 @@ return (
     =&gt;map:with("update", "true")
     =&gt;map:with("isolation", "different-transaction")
   )
-)</query><query name="Revive doc" focus="false" listorder="3" taborder="3" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+)</query><query name="Revive doc" focus="false" listorder="3" taborder="3" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
 import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
     at "/MarkLogic/temporal.xqy";   
 
@@ -94,6 +98,8 @@ declare function local:insert-document(
   $start as xs:dateTime
 ) as empty-sequence()
 {
+  let $options := map:map()
+  =&gt;map:with("collections","Test")
   let $root := 
     &lt;envelope&gt;
       &lt;header&gt;
@@ -108,7 +114,7 @@ declare function local:insert-document(
         &lt;value&gt;{$value}&lt;/value&gt;
       &lt;/instance&gt;
     &lt;/envelope&gt;
-  return temporal:document-insert("temporal-collection", $uri, $root)
+  return temporal:document-insert("temporal-collection", $uri, $root, $options)
 };
 
 let $timestamps := (
@@ -123,7 +129,7 @@ return (
     =&gt;map:with("update", "true")
     =&gt;map:with("isolation", "different-transaction")
   )
-)</query><query name="Temporal Overview" focus="false" listorder="4" taborder="4" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+)</query><query name="Temporal Overview" focus="false" listorder="4" taborder="4" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
 
 let $result := cts:search(
   fn:doc(), 
@@ -136,8 +142,82 @@ let $result := cts:search(
   )
 )
 
-return ($result ! (xdmp:node-uri(.), ("latest" = xdmp:document-get-collections(xdmp:node-uri(.))), .//header))</query><query name="Temporal Delete" focus="false" listorder="5" taborder="5" active="true" database="9850400066707145714" server="1737994625127537410" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+return ($result ! (xdmp:node-uri(.), ("latest" = xdmp:document-get-collections(xdmp:node-uri(.))), .//header))</query><query name="Temporal Delete" focus="false" listorder="5" taborder="5" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
 import module namespace temporal = "http://marklogic.com/xdmp/temporal" 
     at "/MarkLogic/temporal.xqy";   
 
-temporal:document-delete("temporal-collection", "/test/doc-1.xml")</query></workspace></export>
+temporal:document-delete("temporal-collection", "/test/doc-1.xml")</query><query name="Query 1" focus="true" listorder="6" taborder="6" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="sql">-- query
+SELECT 
+  Client.Clients.id as ID, 
+  Client.Clients.active as Active,
+  Client.Clients.validStart as ReportStart, 
+  Client.Clients.validEnd as ReportEnd, 
+  Client.Clients.systemStart as SysStart, 
+  Client.Clients.systemEnd as SysEnd  
+FROM Clients
+WHERE Client.Clients.systemEnd = '9999-12-31T11:59:59Z' AND
+Client.Clients.active = 'true'
+ORDER BY Client.Clients.validStart
+</query><query name="Query 2" focus="false" listorder="7" taborder="7" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+tde:get-view("Client","Clients");</query><query name="Query 3" focus="false" listorder="8" taborder="8" active="true" database="15042685026866971641" server="18001865676697710542" database-name="temporal-project-content" server-name="temporal-project" mode="xquery">xquery version "1.0-ml";
+
+let $tde := 
+&lt;template xmlns="http://marklogic.com/xdmp/tde"&gt;
+    &lt;description&gt;Clients View&lt;/description&gt;
+    &lt;context&gt;/envelope&lt;/context&gt;
+    &lt;enabled&gt;true&lt;/enabled&gt;
+    &lt;rows&gt;
+        &lt;row&gt;
+            &lt;schema-name&gt;Client&lt;/schema-name&gt;
+            &lt;view-name&gt;Clients&lt;/view-name&gt;
+            &lt;columns&gt;
+                &lt;column&gt;
+                    &lt;name&gt;validStart&lt;/name&gt;
+                    &lt;scalar-type&gt;dateTime&lt;/scalar-type&gt;
+                    &lt;val&gt;./header/validStart&lt;/val&gt;
+                    &lt;nullable&gt;false&lt;/nullable&gt;
+                    &lt;invalid-values&gt;ignore&lt;/invalid-values&gt;
+                &lt;/column&gt;
+                &lt;column&gt;
+                    &lt;name&gt;validEnd&lt;/name&gt;
+                    &lt;scalar-type&gt;dateTime&lt;/scalar-type&gt;
+                    &lt;val&gt;./header/validEnd&lt;/val&gt;
+                    &lt;nullable&gt;false&lt;/nullable&gt;
+                    &lt;invalid-values&gt;ignore&lt;/invalid-values&gt;
+                &lt;/column&gt;
+                &lt;column&gt;
+                    &lt;name&gt;systemStart&lt;/name&gt;
+                    &lt;scalar-type&gt;dateTime&lt;/scalar-type&gt;
+                    &lt;val&gt;./header/systemStart&lt;/val&gt;
+                    &lt;nullable&gt;false&lt;/nullable&gt;
+                    &lt;invalid-values&gt;ignore&lt;/invalid-values&gt;
+                &lt;/column&gt;
+                &lt;column&gt;
+                    &lt;name&gt;systemEnd&lt;/name&gt;
+                    &lt;scalar-type&gt;dateTime&lt;/scalar-type&gt;
+                    &lt;val&gt;header/systemEnd&lt;/val&gt;
+                    &lt;nullable&gt;false&lt;/nullable&gt;
+                    &lt;invalid-values&gt;ignore&lt;/invalid-values&gt;
+                &lt;/column&gt;
+                &lt;column&gt;
+                    &lt;name&gt;ID&lt;/name&gt;
+                    &lt;scalar-type&gt;string&lt;/scalar-type&gt;
+                    &lt;val&gt;./instance/id&lt;/val&gt;
+                    &lt;nullable&gt;true&lt;/nullable&gt;
+                    &lt;invalid-values&gt;ignore&lt;/invalid-values&gt;
+                &lt;/column&gt;
+                &lt;column&gt;
+                    &lt;name&gt;Value&lt;/name&gt;
+                    &lt;scalar-type&gt;long&lt;/scalar-type&gt;
+                    &lt;val&gt;./instance/value&lt;/val&gt;
+                    &lt;nullable&gt;true&lt;/nullable&gt;
+                    &lt;invalid-values&gt;ignore&lt;/invalid-values&gt;
+                &lt;/column&gt;
+            &lt;/columns&gt;
+        &lt;/row&gt;
+    &lt;/rows&gt;
+&lt;/template&gt;
+
+let $doc := fn:doc("/test/doc-1.xml")/node()
+
+return tde:node-data-extract($doc, $tde)</query></workspace></export>
