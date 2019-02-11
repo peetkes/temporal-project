@@ -1,60 +1,62 @@
 {
-  "database-name": "%%DATABASE%%",
-  "triggers-database": "%%TRIGGERS_DATABASE%%",
-  "schema-database": "%%SCHEMAS_DATABASE%%",
-	"range-element-index": [
-		{
-			"collation": "",
-			"invalid-values": "reject",
-			"localname": "validStart",
-			"namespace-uri": "",
-			"range-value-positions": false,
-			"scalar-type": "dateTime"
-		}
-	,
-		{
-			"collation": "",
-			"invalid-values": "reject",
-			"localname": "validEnd",
-			"namespace-uri": "",
-			"range-value-positions": false,
-			"scalar-type": "dateTime"
-		}
-	,
-		{
-			"collation": "",
-			"invalid-values": "reject",
-			"localname": "systemStart",
-			"namespace-uri": "",
-			"range-value-positions": false,
-			"scalar-type": "dateTime"
-		}
-	,
-		{
-			"collation": "",
-			"invalid-values": "reject",
-			"localname": "systemEnd",
-			"namespace-uri": "",
-			"range-value-positions": false,
-			"scalar-type": "dateTime"
-		}
-	,
-		{
-			"collation": "http://marklogic.com/collation/codepoint",
-			"invalid-values": "reject",
-			"localname": "id",
-			"namespace-uri": "",
-			"range-value-positions": false,
-			"scalar-type": "string"
-		}
-	,
-		{
-			"collation": "",
-			"invalid-values": "reject",
-			"localname": "value",
-			"namespace-uri": "",
-			"range-value-positions": false,
-			"scalar-type": "long"
-		}
-	]
+    "database-name": "%%DATABASE%%",
+    "element-word-lexicon": [
+        {
+            "collation": "http://marklogic.com/collation/codepoint",
+            "localname": "checksum",
+            "namespace-uri": ""
+        }
+    ],
+    "range-element-index": [
+        {
+            "collation": "",
+            "invalid-values": "reject",
+            "localname": "reportDate",
+            "namespace-uri": "",
+            "range-value-positions": false,
+            "scalar-type": "dateTime"
+        },
+        {
+            "collation": "http://marklogic.com/collation/codepoint",
+            "invalid-values": "reject",
+            "localname": "checksum",
+            "namespace-uri": "",
+            "range-value-positions": false,
+            "scalar-type": "string"
+        },
+        {
+            "collation": "",
+            "invalid-values": "reject",
+            "localname": "systemStart",
+            "namespace-uri": "",
+            "range-value-positions": false,
+            "scalar-type": "dateTime"
+        },
+        {
+            "collation": "",
+            "invalid-values": "reject",
+            "localname": "systemEnd",
+            "namespace-uri": "",
+            "range-value-positions": false,
+            "scalar-type": "dateTime"
+        },
+        {
+            "collation": "http://marklogic.com/collation/codepoint",
+            "invalid-values": "reject",
+            "localname": "id",
+            "namespace-uri": "",
+            "range-value-positions": false,
+            "scalar-type": "string"
+        },
+        {
+            "collation": "",
+            "invalid-values": "reject",
+            "localname": "value",
+            "namespace-uri": "",
+            "range-value-positions": false,
+            "scalar-type": "long"
+        }
+    ],
+    "schema-database": "%%SCHEMAS_DATABASE%%",
+    "triggers-database": "%%TRIGGERS_DATABASE%%"
 }

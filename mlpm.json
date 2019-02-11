@@ -1,9 +1,0 @@
-{
-  "name": "temporal-project",
-  "version": "1.0.0",
-  "description": "temporal project",
-  "repository": "",
-  "dependencies": {
-    "XQuery-XML-Memory-Operations": "1.0.*"
-  }
-}

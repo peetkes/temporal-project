@@ -1,3 +1,92 @@
+import com.marklogic.client.DatabaseClientFactory
+import com.marklogic.client.ext.helper.ClientHelper
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath "com.marklogic:ml-gradle:3.12.0"
+	}
+}
+
 plugins {
-	id "com.marklogic.ml-gradle" version "3.10.0"
+	id "net.saliman.properties" version "1.4.6"
+	id "com.marklogic.ml-gradle" version "3.12.0"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+	jcenter()
+	maven {url "https://developer.marklogic.com/maven2/"}
+}
+configurations {
+	mlcp {
+		resolutionStrategy {
+			force "xml-apis:xml-apis:1.4.01"
+		}
+	}
+}
+
+dependencies {
+	mlcp "com.marklogic:mlcp:9.0.8"
+	mlcp "org.apache.commons:commons-csv:1.2"
+	mlcp files("mlcp")
+}
+
+task ingestData(type: com.marklogic.gradle.task.MlcpTask) {
+	classpath = configurations.mlcp
+	command = "IMPORT"
+	username = temporalIngestUser
+	password = temporalIngestPassword
+	port = Integer.parseInt(mlRestPort)
+	input_file_path = "data/documents/"
+	input_file_pattern = ".*\\.xml"
+	output_collections = "temp-test"
+	output_permissions = "rest-reader,read,rest-writer,update"
+	output_uri_replace = ".*documents,'/temporal'"
+	transform_module = "/mlcp/transforms/duplicate-check.xqy"
+	temporal_collection=temporalCollection
+	transform_namespace = "http://www.marklogic.com/temporal-project/mlcp/transforms/duplicate-check"
+}
+
+
+task clearTemporalDatabase(type: com.marklogic.gradle.task.MarkLogicTask) {
+	description 'This task deletes all files in the "raw" collection from the content database'
+	doLast {
+		if ( environmentName == 'local') {
+			logger.info("Running clearTemporalDocuments")
+			def xq = "xquery version \"1.0-ml\"; \n" +
+					" \n" +
+					"import module namespace temporal = \"http://marklogic.com/xdmp/temporal\" \n" +
+					"      at \"/MarkLogic/temporal.xqy\";\n" +
+					"\n" +
+					"temporal:collection-set-options(\"" + temporalCollection + "\", (\"updates-admin-override\")) \n" +
+					";\n" +
+					"xdmp:collection-delete(\"raw\")\n" +
+					";\n" +
+					"xquery version \"1.0-ml\"; \n" +
+					" \n" +
+					"import module namespace temporal = \"http://marklogic.com/xdmp/temporal\" \n" +
+					"      at \"/MarkLogic/temporal.xqy\";\n" +
+					"\n" +
+					"temporal:collection-set-options(\"" + temporalCollection + "\", (\"updates-safe\"));"
+			def context = new DatabaseClientFactory.DigestAuthContext(
+					getAppConfig().getRestAdminUsername(),
+					getAppConfig().getRestAdminPassword()
+			)
+			def client = DatabaseClientFactory.newClient(
+					getAppConfig().getHost(),
+					getAppConfig().getAppServicesPort(),
+					mlAppName + "-content",
+					context
+			)
+			def clientHelper = new ClientHelper(client)
+			clientHelper.eval(xq)
+			logger.info("Done clearTemporalDocuments")
+		} else {
+			logger.info("ONLY AVAILABLE ON LOCAL ENVIRONMENT!")
+		}
+	}
 }

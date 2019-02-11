@@ -1,6 +1,5 @@
 {
-	"collection-name": "temporal-collection",
+	"collection-name": "%%temporalCollection%%",
 	"system-axis": "system",
-	"valid-axis": "valid",
 	"option": ["updates-safe"]
 }
